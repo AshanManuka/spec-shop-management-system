@@ -135,7 +135,6 @@
         var id = row.cells[0].innerText;
         var name = row.cells[1].innerText;
         
-        alert('ID: ' + id + ', Name: ' + name);
         document.getElementById("departmentCode").value = id;
         document.getElementById("department").value = name;
 
