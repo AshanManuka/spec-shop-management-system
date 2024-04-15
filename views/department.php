@@ -201,8 +201,6 @@
         document.getElementById("departmentCode").value = id;
         document.getElementById("department").value = name;
 
-        
-    
     }
     </script>
 

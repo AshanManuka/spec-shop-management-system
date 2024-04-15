@@ -16,6 +16,57 @@
 <body class="p-4 overflow-y-hidden">
     <div class="container mx-auto bg-white p-3 shadow-xl">
 
+    <?php
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['search'])) {
+                $searchWord = $_POST["keyword"];
+                searchCategory($searchWord);
+            }elseif(isset($_POST['save'])){
+                saveCategory();
+            }elseif(isset($_POST['update'])){
+                updateCategory();
+            }elseif(isset($_POST['delete'])){
+                deleteCategory();
+            }
+        }
+
+        function searchCategory($searchWord){
+            if(empty($searchWord)){
+                echo '<script>alert("Keyword should not be Empty..!")</script>';
+            }else{
+                require_once '../controllers/db.php';
+                require_once '../controllers/categoryController.php';
+
+                $result = searchCategoryByCode($conn, $searchWord);
+                if ($result === 'emptyResult') {
+                    echo '<script>alert("No results found..!")</script>';
+                } else {
+                    // Display the result in a table
+                    echo '<table class="table table-bordered custom-table" id="categoryTable">';
+                    echo '<tr><th>Code</th><th>Name</th></tr>';
+                    foreach ($result as $row) {
+                        echo '<tr onclick="getRowData(this)">';
+                        echo '<td>' . $row['id'] . '</td>';
+                        echo '<td>' . $row['name'] . '</td>';
+                        echo '</tr>';
+                    }
+                    
+                    echo '</table>';
+                }
+            }
+        }
+
+        function saveCategory(){}
+
+        function updateCategory(){}
+
+        function deleteCategory(){}
+
+
+
+    ?>
+
         <div class="row mb-2">
 
             <div class="col-md-6">
@@ -23,13 +74,15 @@
             </div>
 
             <div class="col-md-6">
+                <form id="categorySearch" action="category.php" method="post">
                 <div class="flex items-center">
-                    <input type="text" class="form-control rounded-full shadow-xl p-2" id="search"
+                    <input type="text" class="form-control rounded-full shadow-xl p-2" id="keyword" name="keyword"
                         placeholder="Search...">
-                    <button class="text-yellow-500 text-xl ml-4 hover:text-blue-700">
+                    <button class="text-yellow-500 text-xl ml-4 hover:text-blue-700" id="search" name="search">
                         <i class="fa-solid fa-notes-medical"></i>
                     </button>
                 </div>
+                </form>
             </div>
         </div>
 
@@ -76,41 +129,7 @@
 
 
 
-        <table class="table table-bordered custom-table">
-            <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>Category</th>
-
-                    <!-- <th>Update</th>
-                    <th>Delete</th> -->
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>001</td>
-                    <td>Electronics</td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>Clothing</td>
-                </tr>
-                <tr>
-                    <td>003</td>
-                    <td>Furniture</td>
-                </tr>
-            </tbody>
-        </table>
-
-
-
-
-
-
-
-
-
-    </div>
+         </div>
 
     <script>
     function clearForm() {
@@ -118,6 +137,15 @@
     }
     function exit() {
         window.location.href = "index.php";
+    }
+
+    function getRowData(row) {
+        var id = row.cells[0].innerText;
+        var name = row.cells[1].innerText;
+        
+        document.getElementById("categoryCode").value = id;
+        document.getElementById("category").value = name;
+
     }
     </script>
 
