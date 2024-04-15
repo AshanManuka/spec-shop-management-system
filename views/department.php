@@ -27,33 +27,31 @@
 
         function searchDepartment($searchWord){
             if(empty($searchWord)){
-                echo '<script>alert("KeyWord should not be Empty..!")</script>';
-            }else{
+                echo '<script>alert("Keyword should not be Empty..!")</script>';
+            } else {
                 require_once '../controllers/db.php';
                 require_once '../controllers/departmentController.php';
-    
-               $result = searchDepartmentbyCode($conn, $searchWord);
-
-               if ($result === 'emptyResult') {
-                echo '<script>alert("No results found..!")</script>';
-            } else {
-                $finalResult;
-                foreach($result as $department){
-                    $finalResult = $department;
-                }
-            
-                echo '<script>';
-                echo 'document.addEventListener("DOMContentLoaded", function() {';
-                echo '    document.getElementById("departmentCode").value = "' . $finalResult['id'] . '";';
-                echo '    document.getElementById("department").value = "' . $finalResult['name'] . '";'; 
-                echo '});';
-                echo '</script>';
-            
+                
+                $result = searchDepartmentbyCode($conn, $searchWord);
+                
+                if ($result === 'emptyResult') {
+                    echo '<script>alert("No results found..!")</script>';
+                } else {
+                    // Display the result in a table
+                    echo '<table class="table table-bordered custom-table" id="departmentTable">';
+                    echo '<tr><th>Code</th><th>Name</th></tr>';
+                    foreach ($result as $row) {
+                        echo '<tr onclick="getRowData(this)">';
+                        echo '<td>' . $row['id'] . '</td>';
+                        echo '<td>' . $row['name'] . '</td>';
+                        echo '</tr>';
+                    }
+                    
+                    echo '</table>';
                 }
             }
-
-
         }
+        
     
 
     
@@ -119,32 +117,9 @@
         </form>
         <!-- ======================================================================================================== -->
 
+</div>
 
-        <table class="table table-bordered custom-table">
-            <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>Department</th>
 
-                    <!-- <th>Update</th>
-                    <th>Delete</th> -->
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>001</td>
-                    <td>Electronics</td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>Clothing</td>
-                </tr>
-                <tr>
-                    <td>003</td>
-                    <td>Furniture</td>
-                </tr>
-            </tbody>
-        </table>
 
     </div>
 
@@ -154,6 +129,18 @@
     }
     function exit() {
         window.location.href = "index.php";
+    }
+
+    function getRowData(row) {
+        var id = row.cells[0].innerText;
+        var name = row.cells[1].innerText;
+        
+        alert('ID: ' + id + ', Name: ' + name);
+        document.getElementById("departmentCode").value = id;
+        document.getElementById("department").value = name;
+
+        
+    
     }
     </script>
 
