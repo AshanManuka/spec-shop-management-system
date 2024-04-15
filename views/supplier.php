@@ -15,8 +15,15 @@
 <body class="p-4 overflow-y-hidden">
     <div class="container mx-auto bg-white p-3 shadow-xl">
 
-        <?php
-       
+    <?php
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['search'])) {
+                $searchWord = $_POST["word"];
+                searchSupplier($searchWord);
+            }
+        }
+     
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['save'])) {
@@ -27,6 +34,42 @@
                 deleteSupplier();
             }
         }
+
+
+        function searchSupplier($searchKeyword){
+            if(empty($searchKeyword)){
+                echo '<script>alert("KeyWord should not be Empty..!")</script>'; 
+            }else{
+                // echo '<script>alert("wrong..!")</script>'; 
+                require_once '../controllers/db.php';
+                require_once '../controllers/supplierController.php';
+
+                $result = searchByCode($conn, $searchKeyword);
+
+                if ($result === 'emptyResult') {
+                    echo '<script>alert("No results found..!")</script>';
+                } else {
+                    $finalResult;
+                    foreach($result as $supplier){
+                        $finalResult = $supplier;
+                    }
+
+                    echo $finalResult['name'];
+                   
+                    echo '<script>';
+                    echo 'document.addEventListener("DOMContentLoaded", function() {';
+                     echo '    document.getElementById("name").value = "' . $finalResult['name'] . '";';
+                     echo '    document.getElementById("address").value = "' . $finalResult['address'] . '";';
+                     echo '    document.getElementById("code").value = "' . $finalResult['code'] . '";';
+                    // Add other properties as needed
+                    echo '});';
+                    echo '</script>';
+            
+                }
+
+            }
+
+        } 
 
 
         function saveSupplier(){
@@ -100,29 +143,26 @@
 
             deleteSupplierDetails($conn, $code);
 
-
-
         }
-        
-
-        
 
 
 
-        ?>
+    ?>
 
         <div class="row mb-2">
             <div class="col-md-6">
                 <h3>Supplier <span class="text-warning">Master</span></h3>
             </div>
             <div class="col-md-6">
+            <form id="searchSupplierForm" action="supplier.php" method="post">
                 <div class="flex items-center">
-                    <input type="text" class="form-control rounded-full shadow-xl p-2" id="search"
+                   <input type="text" class="form-control rounded-full shadow-xl p-2" id="word" name="word"
                         placeholder="Search...">
-                    <button class="text-yellow-500 text-xl ml-4 hover:text-blue-700">
+                    <button class="text-yellow-500 text-xl ml-4 hover:text-blue-700" type="submit" name="search">
                         <i class="fa-solid fa-notes-medical"></i>
                     </button>
                 </div>
+                </form> 
             </div>
         </div>
 
@@ -210,8 +250,7 @@
                         <button type="submit" class="bg-yellow-500 text-white p-2 font-semibold" onclick="clearForm()">Clear</button>
                         <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="update">Update</button>
                         <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="delete">Delete</button>
-                        <button type="submit" class="bg-black text-white p-2 font-semibold" onclick="exit()"
-                            name="submit">Exit</button>
+                        <button type="submit" class="bg-black text-white p-2 font-semibold" onclick="exit()"  name="submit">Exit</button>
                     </div>
                 </div>
             </div>
