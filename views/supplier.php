@@ -40,7 +40,6 @@
             if(empty($searchKeyword)){
                 echo '<script>alert("KeyWord should not be Empty..!")</script>'; 
             }else{
-                // echo '<script>alert("wrong..!")</script>'; 
                 require_once '../controllers/db.php';
                 require_once '../controllers/supplierController.php';
 
@@ -66,7 +65,6 @@
                      echo '    document.getElementById("accNum").value = "' . $finalResult['bankAccount'] . '";';
                      echo '    document.getElementById("refName").value = "' . $finalResult['refName'] . '";';
                      echo '    document.getElementById("refMobile").value = "' . $finalResult['refNo'] . '";';
-                    // Add other properties as needed
                     echo '});';
                     echo '</script>';
             

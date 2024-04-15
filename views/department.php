@@ -16,6 +16,50 @@
 <body class="p-4 overflow-y-hidden">
     <div class="container mx-auto bg-white p-3 shadow-xl">
 
+    <?php 
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['search'])) {
+                $searchWord = $_POST["keyword"];
+                searchDepartment($searchWord);
+            }
+        }
+
+        function searchDepartment($searchWord){
+            if(empty($searchWord)){
+                echo '<script>alert("KeyWord should not be Empty..!")</script>';
+            }else{
+                require_once '../controllers/db.php';
+                require_once '../controllers/departmentController.php';
+    
+               $result = searchDepartmentbyCode($conn, $searchWord);
+
+               if ($result === 'emptyResult') {
+                echo '<script>alert("No results found..!")</script>';
+            } else {
+                $finalResult;
+                foreach($result as $department){
+                    $finalResult = $department;
+                }
+            
+                echo '<script>';
+                echo 'document.addEventListener("DOMContentLoaded", function() {';
+                echo '    document.getElementById("departmentCode").value = "' . $finalResult['id'] . '";';
+                echo '    document.getElementById("department").value = "' . $finalResult['name'] . '";'; 
+                echo '});';
+                echo '</script>';
+            
+                }
+            }
+
+
+        }
+    
+
+    
+    
+    ?>
+
         <div class="row mb-2">
 
             <div class="col-md-6">
@@ -23,13 +67,15 @@
             </div>
 
             <div class="col-md-6">
+                <form id='searchDepartment' action="department.php" method="post">
                 <div class="flex items-center">
-                    <input type="text" class="form-control rounded-full shadow-xl p-2" id="search"
+                    <input type="text" class="form-control rounded-full shadow-xl p-2" id="keyword" name="keyword"
                         placeholder="Search...">
-                    <button class="text-yellow-500 text-xl ml-4 hover:text-blue-700">
+                    <button class="text-yellow-500 text-xl ml-4 hover:text-blue-700" type="submit" name="search">
                         <i class="fa-solid fa-notes-medical"></i>
                     </button>
                 </div>
+                </form>
             </div>
         </div>
 
