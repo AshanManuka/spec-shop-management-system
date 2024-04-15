@@ -42,7 +42,7 @@
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
     
-        header("Location: ../views/index.php?error=None");
+        return true;
     }
 
 
@@ -50,7 +50,12 @@
         $check = checkCodeExists($conn, $code);
 
         if($check){
-            deleteSupplierData($conn, $code);
+            $deleted = deleteSupplierData($conn, $code);
+            if($deleted){
+                return true;
+            }else{
+                return false;
+            }
         }else{
             header("Location: ../views/index.php?error=NotFound"); 
         }
@@ -67,6 +72,8 @@
             mysqli_stmt_bind_param($stmt, "s", $code);
             mysqli_stmt_execute($stmt);
             mysqli_stmt_close($stmt);
+
+            return true;
     }
 
     function checkCodeExists($conn, $code){

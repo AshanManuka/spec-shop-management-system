@@ -53,14 +53,19 @@
                     foreach($result as $supplier){
                         $finalResult = $supplier;
                     }
-
-                    echo $finalResult['name'];
                    
                     echo '<script>';
                     echo 'document.addEventListener("DOMContentLoaded", function() {';
                      echo '    document.getElementById("name").value = "' . $finalResult['name'] . '";';
                      echo '    document.getElementById("address").value = "' . $finalResult['address'] . '";';
                      echo '    document.getElementById("code").value = "' . $finalResult['code'] . '";';
+                     echo '    document.getElementById("date").value = "' . $finalResult['date'] . '";';
+                     echo '    document.getElementById("teleMobile").value = "' . $finalResult['mobile'] . '";';
+                     echo '    document.getElementById("teleLand").value = "' . $finalResult['landPhone'] . '";';
+                     echo '    document.getElementById("email").value = "' . $finalResult['email'] . '";';
+                     echo '    document.getElementById("accNum").value = "' . $finalResult['bankAccount'] . '";';
+                     echo '    document.getElementById("refName").value = "' . $finalResult['refName'] . '";';
+                     echo '    document.getElementById("refMobile").value = "' . $finalResult['refNo'] . '";';
                     // Add other properties as needed
                     echo '});';
                     echo '</script>';
@@ -125,7 +130,13 @@
                 array_push($errors, "All fields are required");
             }
 
-            updateSupplierDetails($conn, $code, $date, $name, $address, $teleMobile, $teleLand, $email, $accNum, $refName, $refMobile);
+            $updated = updateSupplierDetails($conn, $code, $date, $name, $address, $teleMobile, $teleLand, $email, $accNum, $refName, $refMobile);
+
+            if($updated){
+                echo '<script>alert("Updated Successfully..!")</script>'; 
+               }else{
+                echo '<script>alert("Something went wrong..!")</script>'; 
+               }
         }
 
 
@@ -138,10 +149,16 @@
             require_once '../controllers/supplierController.php';
 
             if(empty($code)){
-                array_push($errors, "All fields are required");
+                echo '<script>alert("Code should not be Empty..!")</script>'; 
             }
 
-            deleteSupplierDetails($conn, $code);
+            $deleted = deleteSupplierDetails($conn, $code);
+
+            if($deleted){
+                echo '<script>alert("Deleted Successfully..!")</script>'; 
+               }else{
+                echo '<script>alert("Something went wrong..!")</script>'; 
+               }
 
         }
 
