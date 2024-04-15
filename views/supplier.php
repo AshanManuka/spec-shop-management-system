@@ -16,7 +16,20 @@
     <div class="container mx-auto bg-white p-3 shadow-xl">
 
         <?php
-        if (isset($_POST["submit"])) {
+       
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['save'])) {
+                saveSupplier();    
+            } elseif (isset($_POST['update'])) {
+                updateSupplier();
+            } elseif (isset($_POST['delete'])) {
+                deleteSupplier();
+            }
+        }
+
+
+        function saveSupplier(){
             $date = $_POST["date"];
             $code = $_POST["code"];
             $name = $_POST["name"];
@@ -30,27 +43,72 @@
 
             $errors = array();
 
+            require_once '../controllers/db.php';
+            require_once '../controllers/supplierController.php';
+
+            if (empty($date) || empty($code) || empty($name) || empty($address) || empty($teleMobile || empty($teleLand) || empty($email) || empty($accNum) || empty($refName) || empty($refMobile))) {
+                array_push($errors, "All fields are required");
+            }
+            
+           $saved = saveSupplierDetails($conn, $code, $date, $name, $address, $teleMobile, $teleLand, $email, $accNum, $refName, $refMobile);
+
+           if($saved){
+            echo '<script>alert("Saved Successfully..!")</script>'; 
+           }else{
+            echo '<script>alert("Something went wrong..!")</script>'; 
+           }
+
+        }
+
+
+        function updateSupplier(){
+            $date = $_POST["date"];
+            $code = $_POST["code"];
+            $name = $_POST["name"];
+            $address = $_POST["address"];
+            $teleMobile = $_POST["teleMobile"];
+            $teleLand = $_POST["teleLand"];
+            $email = $_POST["email"];
+            $accNum = $_POST["accNum"];
+            $refName = $_POST["refName"];
+            $refMobile = $_POST["refMobile"];
+
+            $errors = array();
+
+            require_once '../controllers/db.php';
+            require_once '../controllers/supplierController.php';
+
             if (empty($date) || empty($code) || empty($name) || empty($address) || empty($teleMobile || empty($teleLand) || empty($email) || empty($accNum) || empty($refName) || empty($refMobile))) {
                 array_push($errors, "All fields are required");
             }
 
-            require_once "database.php";
-            $sql = "INSERT INTO supplier (date, code, name, address, teleMobile, teleLand, email, bankAccNo,refName, refMobile) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = mysqli_stmt_init($conn);
-            $prepareStmt = mysqli_stmt_prepare($stmt, $sql);
-            if ($stmt) {
-                $stmt->bind_param("ssssssssss", $date, $code, $name, $address, $teleMobile, $teleLand, $email, $accNum, $refName, $refMobile);
-                if ($stmt->execute()) {
-                    echo '<script>alert("Supplier added successfully.");</script>';
-                } else {
-                    echo "Error: " . $stmt->error;
-                }
-                $stmt->close();
-            } else {
-                echo "Error: " . $conn->error;
-            }
+            updateSupplierDetails($conn, $code, $date, $name, $address, $teleMobile, $teleLand, $email, $accNum, $refName, $refMobile);
         }
+
+
+        function deleteSupplier(){
+            $code = $_POST["code"];
+
+            $errors = array();
+
+            require_once '../controllers/db.php';
+            require_once '../controllers/supplierController.php';
+
+            if(empty($code)){
+                array_push($errors, "All fields are required");
+            }
+
+            deleteSupplierDetails($conn, $code);
+
+
+
+        }
+        
+
+        
+
+
+
         ?>
 
         <div class="row mb-2">
@@ -148,10 +206,10 @@
                 <div class="col-md-12">
                     <div class="mb-3 d-flex justify-content-end gap-3">
                         <label for="submit" class="form-label"></label>
-                        <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="submit">Submit</button>
+                        <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="save">Submit</button>
                         <button type="submit" class="bg-yellow-500 text-white p-2 font-semibold" onclick="clearForm()">Clear</button>
-                        <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="submit">Update</button>
-                        <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="submit">Delete</button>
+                        <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="update">Update</button>
+                        <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="delete">Delete</button>
                         <button type="submit" class="bg-black text-white p-2 font-semibold" onclick="exit()"
                             name="submit">Exit</button>
                     </div>
@@ -165,7 +223,7 @@
             document.getElementById("supplierMasterForm").reset();
         }
         function exit() {
-        window.location.href = "index.php";
+         window.location.href = "index.php";
     }
     </script>
 
