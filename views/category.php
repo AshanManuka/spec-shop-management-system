@@ -98,7 +98,24 @@
 
         }
 
-        function deleteCategory(){}
+        function deleteCategory(){
+            require_once '../controllers/db.php';
+            require_once '../controllers/categoryController.php';
+
+            $id = $_POST["categoryCode"];
+
+            if(empty($id)){
+                echo '<script>alert("Code should not be Empty..!")</script>';
+            }else{
+                $deleted = deleteCategoryData($conn, $id);
+
+                if($deleted){
+                    echo '<script>alert("Category Deleted Successfully..!")</script>';
+                }else{
+                    echo '<script>alert("Something went wrong..!")</script>';
+                }
+            }
+        }
 
 
 
