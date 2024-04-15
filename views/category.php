@@ -57,9 +57,46 @@
             }
         }
 
-        function saveCategory(){}
+        function saveCategory(){
+            $id = $_POST["categoryCode"];
+            $name = $_POST["category"];
+            if(empty($id) || empty($name)){
+                echo '<script>alert("Input Should not be Empty..!")</script>';
+            }else{
+                require_once '../controllers/db.php';
+                require_once '../controllers/categoryController.php';
 
-        function updateCategory(){}
+                $saved = saveCategoryData($conn, $id, $name);
+
+                if($saved){
+                    echo '<script>alert("Category Saved Successfully..!")</script>';
+                }else{
+                    echo '<script>alert("Something went wrong..!")</script>';
+                }
+
+            }
+        }
+
+        function updateCategory(){
+            $id = $_POST["categoryCode"];
+            $name = $_POST["category"];
+            if(empty($id) || empty($name)){
+                echo '<script>alert("Input Should not be Empty..!")</script>';
+            }else{
+                require_once '../controllers/db.php';
+                require_once '../controllers/categoryController.php';
+
+                $updated = updateCategoryData($conn, $id, $name);
+
+                if($updated){
+                    echo '<script>alert("Category Updated Successfully..!")</script>';
+                }else{
+                    echo '<script>alert("Something went wrong..!")</script>';
+                }
+
+            }
+
+        }
 
         function deleteCategory(){}
 
@@ -115,10 +152,10 @@
                 <div class="col-md-12">
                     <div class="mb-3 d-flex justify-content-end gap-3">
                         <label for="submit" class="form-label"></label>
-                        <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="submit">Submit</button>
+                        <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="save">Submit</button>
                         <button type="button" class="bg-yellow-500 text-white p-2 font-semibold" onclick="clearForm()">Clear</button>
-                        <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="submit">Update</button>
-                        <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="submit">Delete</button>
+                        <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="update">Update</button>
+                        <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="delete">Delete</button>
                         <button type="submit" class="bg-black text-white p-2 font-semibold" onclick="exit()"
                             name="submit">Exit</button>
                     </div>
