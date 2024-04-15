@@ -27,35 +27,35 @@
 <body class=" p-3">
     <div class="container bg-white mx-auto p-2 w-full">
         <?php
-        if (isset($_POST["submit"])) {
-            $branch_name = $_POST["branch_name"];
-            $branch_code = $_POST["branch_code"];
-            $errors = array();
 
-            if (empty($branch_name) or empty($branch_code)) {
-                array_push($errors, "All fields are required");
-            }
-
-            require_once "database.php";
-
-            if (count($errors) > 0) {
-                foreach ($errors as $error) {
-                    echo "<div class='alert alert-danger'>$error</div>";
-                }
-            } else {
-
-                $sql = "INSERT INTO branch ( branch_code,name) VALUES ( ?, ? )";
-                $stmt = mysqli_stmt_init($conn);
-                $prepareStmt = mysqli_stmt_prepare($stmt, $sql);
-                if ($prepareStmt) {
-                    mysqli_stmt_bind_param($stmt, "ss", $branch_code, $branch_name);
-                    mysqli_stmt_execute($stmt);
-                    echo "<div class='alert alert-success'>Branch Added successfully.</div>";
-                } else {
-                    die("Something went wrong");
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (isset($_POST['save'])) {
+                    searchDepartment();
                 }
             }
-        }
+
+
+            function searchDepartment(){
+                $code = $_POST["branchCode"];
+                $name= $_POST["branchName"];
+
+                
+                    if(empty($code) || empty($name)){
+                        echo '<script>alert("Inputs should not be Empty..!")</script>';
+                    }else{
+                        require_once '../controllers/db.php';
+                        require_once '../controllers/branchController.php';
+
+                        $saved = saveBranchData($conn, $code, $name);
+
+                        if($saved){
+                            echo '<script>alert("Branch Saved Sccessfully..!")</script>'; 
+                        }
+                    }
+                }
+
+
+        
         ?>
 
         <div class="grid grid-cols-2 gap-4 p-8">
@@ -66,14 +66,14 @@
             <div class="text-center pt-5">
                 <form action="branch.php" method="post">
                     <div class="mb-4">
-                        <input type="text" class="form-input rounded-md border-2 border-gray-200 p-2 w-full" name="branch_code" placeholder="Branch Code">
+                        <input type="text" class="form-input rounded-md border-2 border-gray-200 p-2 w-full" name="branchCode" placeholder="Branch Code">
                     </div>
                     <div class="mb-4">
-                        <input type="text" class="form-input rounded-md border-2 border-gray-200 p-2 w-full" name="branch_name" placeholder="Branch Name">
+                        <input type="text" class="form-input rounded-md border-2 border-gray-200 p-2 w-full" name="branchName" placeholder="Branch Name">
                     </div>
 
                     <div>
-                        <input type="submit" class="bg-purple-500 hover:bg-blue-500 text-black font-semibold w-full p-3 rounded-md" value="Submit" name="submit">
+                        <input type="submit" class="bg-purple-500 hover:bg-blue-500 text-black font-semibold w-full p-3 rounded-md" name="save">
                     </div>
                 </form>
                

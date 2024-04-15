@@ -24,57 +24,47 @@
 
 <body>
     <div class="container p-3">
-        <?php
-        if (isset($_POST["submit"])) {
-            $user_name = $_POST["user_name"];
-            $branch = $_POST["branch"];
-            $password = $_POST["password"];
-            $passwordRepeat = $_POST["repeat_password"];
+    <?php
+require_once "../controllers/db.php";
+require_once "../controllers/branchController.php";
 
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+// Retrieve all branches
+$result = getAllBranche($conn);
 
-            $errors = array();
+// Check if the form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['save'])) {
+        // Pass $conn to the saveUser function
+        saveUser($conn);
+    }
+}
 
-            if (empty($user_name) or empty($branch) or empty($password) or empty($passwordRepeat)) {
-                array_push($errors, "All fields are required");
+function saveUser($conn){
+    require_once "../controllers/userController.php";
+
+    $userName = $_POST["userName"];
+    $branch = $_POST["branch"];
+    $password = $_POST["password"];
+    $repeat = $_POST["repeatPassword"];
+
+    if(empty($userName) || empty($branch) || empty($password) || empty($repeat)){
+        echo '<script>alert("Inputs should not be Empty..!")</script>';
+    }else{
+        if($password === $repeat){
+            // Pass $conn to the saveUserData function
+            $saved = saveUserData($conn, $userName, $branch, $password);
+            if($saved){
+                echo '<script>alert("Registration Seccessfully..!")</script>';
+            }else{
+                echo '<script>alert("Something went wrong..!")</script>';
             }
-            //    if (!filter_var($branch, FILTER_VALIDATE_EMAIL)) {
-            //     array_push($errors, "Branch is not valid");
-            //    }
-            if (strlen($password) < 8) {
-                array_push($errors, "Password must be at least 8 charactes long");
-            }
-            if ($password !== $passwordRepeat) {
-                array_push($errors, "Password does not match");
-            }
-            require_once "database.php";
-            //    $sql = "SELECT * FROM users WHERE branch = '$branch'";
-            //    $result = mysqli_query($conn, $sql);
-            //    $rowCount = mysqli_num_rows($result);
-            //    if ($rowCount>0) {
-            //     array_push($errors,"Branch already exists!");
-            //    }
-            if (count($errors) > 0) {
-                foreach ($errors as $error) {
-                    echo "<div class='alert alert-danger'>$error</div>";
-                }
-            } else {
-
-                $sql = "INSERT INTO users (user_name, branch, password) VALUES ( ?, ?, ? )";
-                $stmt = mysqli_stmt_init($conn);
-                $prepareStmt = mysqli_stmt_prepare($stmt, $sql);
-                if ($prepareStmt) {
-                    mysqli_stmt_bind_param($stmt, "sss", $user_name, $branch, $passwordHash);
-                    mysqli_stmt_execute($stmt);
-                    echo "<div class='alert alert-success'>You are registered successfully.</div>";
-                } else {
-                    die("Something went wrong");
-                }
-            }
-
-
+        }else{
+            echo '<script>alert("Passwords not matching..!")</script>';
         }
-        ?>
+    }
+}
+?>
+
 
         <div class="form-container">
             <div class="row">
@@ -94,16 +84,17 @@
                         <form action="registration.php" method="post" class="gap-3">
                             <div class="form-group mb-4">
                                 <input type="text" class="form-control rounded-md border-2 border-gray-200 p-2 w-full"
-                                    name="user_name" placeholder="User Name:">
+                                    name="userName" placeholder="User Name:">
                             </div>
                             <div class="form-group mb-4">
-                                <!-- <label for="branch" class="text-start font-semibold">Branch:</label> -->
-                                <select class="form-control rounded-md border-2 border-gray-200 p-2 w-full"
-                                    name="branch" id="branch">
-                                    <option value="" disabled selected>Select Branch:</option>
-                                    <option value="branch2">Branch 2</option>
-                                    <option value="branch3">Branch 3</option>
-                                </select>
+                                <select class="form-control rounded-md border-2 border-gray-200 p-2 w-full" name="branch" id="branch">
+                                <option value="" disabled selected>Select Branch:</option>
+                                <?php
+                                foreach ($result as $branch) {
+                                    echo '<option value="' . $branch['id'] . '">' . $branch['name'] . '</option>';
+                                }
+                                ?>
+                            </select>
                             </div>
                             <div class="form-group mb-4">
                                 <input type="password"
@@ -113,12 +104,12 @@
                             <div class="form-group mb-4">
                                 <input type="password"
                                     class="form-control rounded-md border-2 border-gray-200 p-2 w-full"
-                                    name="repeat_password" placeholder="Repeat Password:">
+                                    name="repeatPassword" placeholder="Repeat Password:">
                             </div>
                             <div class="form-btn">
                                 <input type="submit"
                                     class="bg-purple-700 text-white hover:bg-blue-600  font-semibold w-full p-3 rounded-md"
-                                    value="Register" name="submit">
+                                    name="save">
                             </div>
                         </form>
                         <!-- <div>
