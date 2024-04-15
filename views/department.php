@@ -22,6 +22,10 @@
             if (isset($_POST['search'])) {
                 $searchWord = $_POST["keyword"];
                 searchDepartment($searchWord);
+            }elseif(isset($_POST['save'])){
+                saveDepartment();
+            }elseif(isset($_POST['update'])){
+                updateDepartment();
             }
         }
 
@@ -50,6 +54,46 @@
                     echo '</table>';
                 }
             }
+        }
+
+
+        function saveDepartment(){
+            require_once '../controllers/db.php';
+            require_once '../controllers/departmentController.php';
+
+            $id = $_POST["departmentCode"];
+            $name = $_POST["department"];
+
+            if(empty($id) || empty($name)){
+                echo '<script>alert("Code or Department Name should not be Empty..!")</script>';
+            }else{
+                $saved = saveDepartmentData($conn, $id, $name);
+
+                if($saved){
+                    echo '<script>alert("Department Saved Sccessfully..!")</script>'; 
+                }
+            }
+
+        }
+
+        function updateDepartment(){
+            require_once '../controllers/db.php';
+            require_once '../controllers/departmentController.php';
+
+            $id = $_POST["departmentCode"];
+            $name = $_POST["department"];
+
+            if(empty($id) || empty($name)){
+                echo '<script>alert("Code or Department Name should not be Empty..!")</script>';
+            }else{
+                $update = updateDepartmentData($conn, $id, $name);
+
+                if($update){
+                    echo '<script>alert("Department Update Sccessfully..!")</script>'; 
+                }
+            }
+
+
         }
         
     
@@ -104,11 +148,11 @@
                     <div class="col-md-12">
                         <div class="mb-3 d-flex justify-content-end gap-3">
                             <label for="submit" class="form-label"></label>
-                            <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="submit">Submit</button>
+                            <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="save">Submit</button>
                             <button type="button" class="bg-yellow-500 text-white p-2 font-semibold"
                                 onclick="clearForm()">Clear</button>
-                            <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="submit">Update</button>
-                            <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="submit">Delete</button>
+                            <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="update">Update</button>
+                            <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="delete">Delete</button>
                             <button type="submit" class="bg-black text-white p-2 font-semibold" onclick="exit()"
                             name="submit">Exit</button>
                         </div>

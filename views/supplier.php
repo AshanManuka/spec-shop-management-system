@@ -17,12 +17,12 @@
 
     <?php
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['search'])) {
-                $searchWord = $_POST["word"];
-                searchSupplier($searchWord);
-            }
-        }
+        // if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        //     if (isset($_POST['search'])) {
+        //         $searchWord = $_POST["word"];
+        //         searchSupplier($searchWord);
+        //     }
+        // }
      
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,6 +32,9 @@
                 updateSupplier();
             } elseif (isset($_POST['delete'])) {
                 deleteSupplier();
+            }elseif(isset($_POST['search'])){
+                $searchWord = $_POST["word"];
+                searchSupplier($searchWord);
             }
         }
 
