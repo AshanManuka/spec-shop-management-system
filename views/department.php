@@ -26,6 +26,8 @@
                 saveDepartment();
             }elseif(isset($_POST['update'])){
                 updateDepartment();
+            }elseif(isset($_POST['delete'])){
+                deleteDepartment();
             }
         }
 
@@ -92,8 +94,25 @@
                     echo '<script>alert("Department Update Sccessfully..!")</script>'; 
                 }
             }
+        }
 
+        function deleteDepartment(){
+            require_once '../controllers/db.php';
+            require_once '../controllers/departmentController.php';
 
+            $id = $_POST["departmentCode"];
+
+            if(empty($id)){
+                echo '<script>alert("Code should not be Empty..!")</script>';
+            }else{
+                $deleted = deleteDepartmentDeta($conn, $id);
+
+                if($deleted){
+                    echo '<script>alert("Department Deleted Successfully..!")</script>';
+                }else{
+                    echo '<script>alert("Something went wrong..!")</script>';
+                }
+            }
         }
         
     
