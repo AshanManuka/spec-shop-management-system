@@ -25,44 +25,44 @@
 <body>
     <div class="container p-3">
     <?php
-require_once "../controllers/db.php";
-require_once "../controllers/branchController.php";
+        require_once "../controllers/db.php";
+        require_once "../controllers/branchController.php";
 
-// Retrieve all branches
-$result = getAllBranche($conn);
+        // Retrieve all branches
+        $result = getAllBranche($conn);
 
-// Check if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['save'])) {
-        // Pass $conn to the saveUser function
-        saveUser($conn);
-    }
-}
-
-function saveUser($conn){
-    require_once "../controllers/userController.php";
-
-    $userName = $_POST["userName"];
-    $branch = $_POST["branch"];
-    $password = $_POST["password"];
-    $repeat = $_POST["repeatPassword"];
-
-    if(empty($userName) || empty($branch) || empty($password) || empty($repeat)){
-        echo '<script>alert("Inputs should not be Empty..!")</script>';
-    }else{
-        if($password === $repeat){
-            // Pass $conn to the saveUserData function
-            $saved = saveUserData($conn, $userName, $branch, $password);
-            if($saved){
-                echo '<script>alert("Registration Seccessfully..!")</script>';
-            }else{
-                echo '<script>alert("Something went wrong..!")</script>';
+        // Check if the form is submitted
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['save'])) {
+                // Pass $conn to the saveUser function
+                saveUser($conn);
             }
-        }else{
-            echo '<script>alert("Passwords not matching..!")</script>';
         }
-    }
-}
+
+        function saveUser($conn){
+            require_once "../controllers/userController.php";
+
+            $userName = $_POST["userName"];
+            $branch = $_POST["branch"];
+            $password = $_POST["password"];
+            $repeat = $_POST["repeatPassword"];
+
+            if(empty($userName) || empty($branch) || empty($password) || empty($repeat)){
+                echo '<script>alert("Inputs should not be Empty..!")</script>';
+            }else{
+                if($password === $repeat){
+                    // Pass $conn to the saveUserData function
+                    $saved = saveUserData($conn, $userName, $branch, $password);
+                    if($saved){
+                        echo '<script>alert("Registration Seccessfully..!")</script>';
+                    }else{
+                        echo '<script>alert("Something went wrong..!")</script>';
+                    }
+                }else{
+                    echo '<script>alert("Passwords not matching..!")</script>';
+                }
+            }
+        }
 ?>
 
 

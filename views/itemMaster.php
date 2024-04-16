@@ -16,6 +16,22 @@
 
 <body>
     <div class="container bg-white p-4 w-full">
+        <?php
+        
+        require_once "../controllers/db.php";
+        require_once "../controllers/categoryController.php";
+        require_once "../controllers/departmentController.php";
+        require_once "../controllers/supplierController.php";
+
+        $departmentList = getAllDepartment($conn);
+        $categoryList = getAllCategory($conn);
+        $supplierList = getAllSupplier($conn);
+
+        
+        
+        
+        
+        ?>
 
         <div class="row mb-2">
 
@@ -72,13 +88,14 @@
 
                     <div class="mb-3">
                         <label for="department" class="form-label">Department:</label>
-                        <select class="form-select" id="department" name="department">
-                            <?php foreach ($departments as $department): ?>
-                            <option value="<?= $department['description'] ?>">
-                                <?= $department['description'] ?>
-                            </option>
-                            <?php endforeach; ?>
-                        </select>
+                        <select class="form-control rounded-md border-2 border-gray-200 p-2 w-full" name="department" id="department">
+                                <option value="" disabled selected>Select department:</option>
+                                <?php
+                                foreach ($departmentList as $department) {
+                                    echo '<option value="' . $department['id'] . '">' . $department['name'] . '</option>';
+                                }
+                                ?>
+                            </select>
                     </div>
 
                 </div>
@@ -91,14 +108,14 @@
 
                     <div class="mb-3">
                         <label for="category" class="form-label">Category:</label>
-                        <select class="form-select" id="category" name="category">
-                            <?php foreach ($categories as $category): ?>
-                            <option value="<?= $category['description'] ?>">
-                                <?= $category['description'] ?>
-                            </option>
-                            <?php endforeach; ?>
-
-                        </select>
+                        <select class="form-control rounded-md border-2 border-gray-200 p-2 w-full" name="category" id="category">
+                                <option value="" disabled selected>Select category:</option>
+                                <?php
+                                foreach ($categoryList as $category) {
+                                    echo '<option value="' . $category['id'] . '">' . $category['name'] . '</option>';
+                                }
+                                ?>
+                            </select>
                     </div>
 
 
@@ -112,14 +129,14 @@
 
                     <div class="mb-3">
                         <label for="supplier" class="form-label">Supplier:</label>
-                        <select class="form-select" id="supplier" name="supplier">
-                            <?php foreach ($suppliers as $supplier): ?>
-                            <option value="<?= $supplier['name'] ?>">
-                                <?= $supplier['name'] ?>
-                            </option>
-                            <?php endforeach; ?>
-
-                        </select>
+                        <select class="form-control rounded-md border-2 border-gray-200 p-2 w-full" name="supplier" id="supplier">
+                                <option value="" disabled selected>Select supplier:</option>
+                                <?php
+                                foreach ($supplierList as $supplier) {
+                                    echo '<option value="' . $supplier['code'] . '">' . $supplier['name'] . '</option>';
+                                }
+                                ?>
+                            </select>
                     </div>
 
                 </div>
