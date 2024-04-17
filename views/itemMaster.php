@@ -31,6 +31,8 @@
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST["save"])) {
                 saveItem($conn);
+            }else if(isset($_POST["search"])){
+                searchItem($conn);
             }
         } 
 
@@ -68,6 +70,46 @@
             }
         }
 
+
+        function searchItem($conn){
+            $keyword = $_POST["keyword"];
+
+            require_once '../controllers/itemController.php';
+
+             $result = searchItemByKeyword($conn, $keyword);
+
+             if($result === 'emptyResult'){
+                echo '<script>alert("Empty Result..!");</script>';
+             }else{
+                echo '<table class="table table-bordered custom-table" id="categoryTable">';
+                echo '<tr><th>Code</th><th>BarCode</th><th>Description</th><th>Department</th><th>Category</th><th>Supplier</th><th>Cost</th><th>Profit</th><th>Sales Price</th><th>Discount</th><th>Wholesale</th><th>Location</th><th>Max Qty</th><th>Min Qty</th></tr>';
+                foreach ($result as $row) {
+                    echo '<tr onclick="getRowData(this)">';
+                    echo '<td>' . $row['code'] . '</td>';
+                    echo '<td>' . $row['barcode'] . '</td>';
+                    echo '<td>' . $row['description'] . '</td>';
+                    echo '<td>' . $row['department'] . '</td>';
+                    echo '<td>' . $row['category'] . '</td>';
+                    echo '<td>' . $row['supplier'] . '</td>';
+                    echo '<td>' . $row['cost'] . '</td>';
+                    echo '<td>' . $row['profit'] . '</td>';
+                    echo '<td>' . $row['salePrice'] . '</td>';
+                    echo '<td>' . $row['discount'] . '</td>';
+                    echo '<td>' . $row['wholesale'] . '</td>';
+                    echo '<td>' . $row['location'] . '</td>';
+                    echo '<td>' . $row['maxStockQty'] . '</td>';
+                    echo '<td>' . $row['minStockQty'] . '</td>';
+                    echo '</tr>';
+                }
+                
+                echo '</table>';
+             }
+
+
+
+
+        }
+
         
         
         
@@ -81,13 +123,15 @@
             </div>
 
             <div class="col-md-6">
+                <form id="searchitemForm" action="itemMaster.php" method="post">
                 <div class="flex items-center ">
-                    <input type="text" class="form-control bg-white rounded-full shadow-xl" id="search"
+                    <input type="text" class="form-control bg-white rounded-full shadow-xl" id="keyword" name="keyword"
                         placeholder="Search...">
-                    <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700">
+                    <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700" name="search">
                         <i class="fa-solid fa-notes-medical"></i> </button>
                 </div>
 
+                </form>
 
 
             </div>
@@ -277,8 +321,7 @@
                         <button type="submit" class="bg-yellow-500 text-white p-2 font-semibold" onclick="clearForm()">Clear</button>
                         <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="update">Update</button>
                         <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="delete">Delete</button>
-                        <button type="submit" class="bg-black text-white p-2 font-semibold" onclick="exit()"
-                            name="submit">Exit</button>
+                        <button type="submit" class="bg-black text-white p-2 font-semibold" onclick="exit()" name="submit">Exit</button>
                     </div>
                 </div>
             </div>
@@ -296,6 +339,42 @@
     function exit() {
         window.location.href = "index.php";
     }
+
+    function getRowData(row) {
+        var code = row.cells[0].innerText;
+        var barcode = row.cells[1].innerText;
+        var description = row.cells[2].innerText;
+        var department = row.cells[3].innerText;
+        var category = row.cells[4].innerText;
+        var supplier = row.cells[5].innerText;
+        var cost = row.cells[6].innerText;
+        var profit = row.cells[7].innerText;
+        var salePrice = row.cells[8].innerText;
+        var discount = row.cells[9].innerText;
+        var wholesale = row.cells[10].innerText;
+        var location = row.cells[11].innerText;
+        var maxQty = row.cells[12].innerText;
+        var minQty = row.cells[13].innerText;
+        
+        document.getElementById("itemCode").value = code;
+        document.getElementById("barcode").value = barcode;
+        document.getElementById("description").value = description;
+        document.getElementById("department").value = department;
+        document.getElementById("category").value = category;
+        document.getElementById("supplier").value = supplier;
+        document.getElementById("cost").value = cost;
+        document.getElementById("profit").value = profit;
+        document.getElementById("salesPrice").value = salePrice;
+        document.getElementById("discountRs").value = discount;
+        document.getElementById("wholesale").value = wholesale;
+        document.getElementById("location").value = location;
+        document.getElementById("maxStockQty").value = maxQty;
+        document.getElementById("minStockQty").value = minQty;
+
+
+
+    }
+
     </script>
 
 </body>
