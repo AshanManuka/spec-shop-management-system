@@ -35,6 +35,8 @@
                 searchItem($conn);
             }else if(isset($_POST["update"])){
                 updateItem($conn);
+            }else if(isset($_POST["delete"])){
+                deleteItem($conn);
             }
         } 
 
@@ -136,6 +138,24 @@
 
                 if ($updated === true) {
                     echo '<script>alert("Item Updated successfully..!");</script>';
+                } else {
+                    echo '<script>alert("Something went wrong..!");</script>';
+                }
+            }
+        }
+
+        function deleteItem($conn){
+            $itemCode = $_POST["itemCode"];
+
+            if(empty($itemCode)){
+                echo '<script>alert("Please Select a Item..!");</script>';
+            }else{
+                require_once '../controllers/itemController.php';
+
+                $deleted = deleteItemData($conn,$itemCode);
+
+                if ($deleted === true) {
+                    echo '<script>alert("Item Delete successfully..!");</script>';
                 } else {
                     echo '<script>alert("Something went wrong..!");</script>';
                 }

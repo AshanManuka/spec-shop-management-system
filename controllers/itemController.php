@@ -65,3 +65,18 @@
         
             return true; 
     }
+
+    function deleteItemData($conn,$itemCode){
+        $sql = "DELETE FROM item WHERE code = ?;";
+        $stmt = mysqli_stmt_init($conn);
+    
+            if(!mysqli_stmt_prepare($stmt, $sql)){
+                header("Location: ../views/index.php?error=stmtError");
+                exit();
+            }
+            mysqli_stmt_bind_param($stmt, "s", $itemCode);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+
+            return true;
+    }
