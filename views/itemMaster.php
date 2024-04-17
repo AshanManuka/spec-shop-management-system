@@ -27,6 +27,47 @@
         $categoryList = getAllCategory($conn);
         $supplierList = getAllSupplier($conn);
 
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST["save"])) {
+                saveItem($conn);
+            }
+        } 
+
+
+        function saveItem($conn){
+            
+            $itemCode = $_POST["itemCode"];
+            $barcode = $_POST["barcode"];
+            $description = $_POST["description"];
+            $department = $_POST["department"];
+            $category = $_POST["category"];
+            $supplier = $_POST["supplier"];
+            $cost = $_POST["cost"];
+            $profit = $_POST["profit"];
+            $salesPrice = $_POST["salesPrice"];
+            $discountRs = $_POST["discountRs"];
+            $wholesale = $_POST["wholesale"];
+            $location = $_POST["location"];
+            $maxStockQty = $_POST["maxStockQty"];
+            $minStockQty = $_POST["minStockQty"];
+
+
+            require_once '../controllers/itemController.php';
+
+            if (empty($itemCode) || empty($description) || empty($department) || empty($cost) || empty($salesPrice) || empty($category) || empty($supplier) || empty($profit) || empty($discountRs) || empty($wholesale) || empty($location) || empty($maxStockQty) || empty($minStockQty)) {
+                echo '<script>alert("All fields required..!");</script>';
+            }else{
+                $saved = saveItemData($conn, $itemCode, $barcode, $description, $department, $category, $supplier, $cost, $profit, $salesPrice, $discountRs, $wholesale, $location, $maxStockQty, $minStockQty);
+
+                if ($saved === true) {
+                    echo '<script>alert("Item added successfully..!");</script>';
+                } else {
+                    echo '<script>alert("Something went wrong..!");</script>';
+                }
+            }
+        }
+
         
         
         
@@ -232,10 +273,10 @@
                 <div class="col-md-12">
                 <div class="mb-3 d-flex justify-content-end gap-3">
                         <label for="submit" class="form-label"></label>
-                        <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="submit">Submit</button>
+                        <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="save">Submit</button>
                         <button type="submit" class="bg-yellow-500 text-white p-2 font-semibold" onclick="clearForm()">Clear</button>
-                        <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="submit">Update</button>
-                        <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="submit">Delete</button>
+                        <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="update">Update</button>
+                        <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="delete">Delete</button>
                         <button type="submit" class="bg-black text-white p-2 font-semibold" onclick="exit()"
                             name="submit">Exit</button>
                     </div>
