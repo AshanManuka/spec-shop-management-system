@@ -33,6 +33,8 @@
                 saveItem($conn);
             }else if(isset($_POST["search"])){
                 searchItem($conn);
+            }else if(isset($_POST["update"])){
+                updateItem($conn);
             }
         } 
 
@@ -105,11 +107,40 @@
                 echo '</table>';
              }
 
-
-
-
         }
 
+
+        function updateItem($conn){
+            $itemCode = $_POST["itemCode"];
+            $barcode = $_POST["barcode"];
+            $description = $_POST["description"];
+            $department = $_POST["department"];
+            $category = $_POST["category"];
+            $supplier = $_POST["supplier"];
+            $cost = $_POST["cost"];
+            $profit = $_POST["profit"];
+            $salesPrice = $_POST["salesPrice"];
+            $discountRs = $_POST["discountRs"];
+            $wholesale = $_POST["wholesale"];
+            $location = $_POST["location"];
+            $maxStockQty = $_POST["maxStockQty"];
+            $minStockQty = $_POST["minStockQty"];
+
+
+            require_once '../controllers/itemController.php';
+
+            if (empty($itemCode) || empty($description) || empty($department) || empty($cost) || empty($salesPrice) || empty($category) || empty($supplier) || empty($profit) || empty($discountRs) || empty($wholesale) || empty($location) || empty($maxStockQty) || empty($minStockQty)) {
+                echo '<script>alert("All fields required..!");</script>';
+            }else{
+                $updated = updateItemData($conn, $itemCode, $barcode, $description, $department, $category, $supplier, $cost, $profit, $salesPrice, $discountRs, $wholesale, $location, $maxStockQty, $minStockQty);
+
+                if ($updated === true) {
+                    echo '<script>alert("Item Updated successfully..!");</script>';
+                } else {
+                    echo '<script>alert("Something went wrong..!");</script>';
+                }
+            }
+        }
         
         
         
@@ -177,7 +208,7 @@
                                 <option value="" disabled selected>Select department:</option>
                                 <?php
                                 foreach ($departmentList as $department) {
-                                    echo '<option value="' . $department['id'] . '">' . $department['name'] . '</option>';
+                                    echo '<option value="' . $department['name'] . '">' . $department['name'] . '</option>';
                                 }
                                 ?>
                             </select>
@@ -197,7 +228,7 @@
                                 <option value="" disabled selected>Select category:</option>
                                 <?php
                                 foreach ($categoryList as $category) {
-                                    echo '<option value="' . $category['id'] . '">' . $category['name'] . '</option>';
+                                    echo '<option value="' . $category['name'] . '">' . $category['name'] . '</option>';
                                 }
                                 ?>
                             </select>
@@ -218,7 +249,7 @@
                                 <option value="" disabled selected>Select supplier:</option>
                                 <?php
                                 foreach ($supplierList as $supplier) {
-                                    echo '<option value="' . $supplier['code'] . '">' . $supplier['name'] . '</option>';
+                                    echo '<option value="' . $supplier['name'] . '">' . $supplier['name'] . '</option>';
                                 }
                                 ?>
                             </select>
