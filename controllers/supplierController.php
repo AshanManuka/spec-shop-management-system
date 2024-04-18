@@ -118,7 +118,7 @@
     }
 
     function getAllSupplier($conn){
-        $sql = "SELECT * FROM supplier;";
+    $sql = "SELECT * FROM supplier;";
     $stmt = mysqli_stmt_init($conn);
     
     if(!mysqli_stmt_prepare($stmt, $sql)){
