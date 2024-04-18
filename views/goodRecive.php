@@ -24,7 +24,6 @@
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST["search"])) {
-            
             $keyword = $_POST["keyword"];
    
         if(empty($keyword)){
@@ -35,6 +34,17 @@
             $supplierList = filterSupplier($conn, $keyword);
 
         }
+        }else if(isset($_POST["searchItem"])){
+            $keyword = $_POST["itemKeyword"];
+
+            if(empty($keyword)){
+                echo '<script>alert("Empty Field..!")</script>';
+            } else {
+                require_once "../controllers/itemController.php";
+        
+                $itemList = searchItemByKeyword($conn, $keyword);
+    
+            }
         }
     }
 
@@ -90,7 +100,7 @@
                         <div class="  col-span-3 ">
                         <div class="flex items-center mt-4">
                             <input type="text" class="form-control bg-white rounded-full shadow-xl" id="keyword" name="keyword" placeholder="Search">
-                            <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700" type="submit" id="searchButton" name="search" onclick="location.reload()">
+                            <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700" type="submit" id="searchButton" name="search">
                                 <i class="fa-solid fa-notes-medical"></i>
                             </button>
                         </div>
@@ -99,11 +109,11 @@
 
                         <div class="  col-span-3 gap-2">
                             <label for="companyCode" class="form-label text-xs font-medium text-center">Company Code:</label>
-                                <select type="text" class="form-control h-8" id="supplier" name="supplier">
+                                <select type="text" class="form-control h-8" id="supplier" name="supplier" onchange="updateCompanyName()">
                                 <?php
                                 if(!empty($supplierList)){
                                     foreach ($supplierList as $supplier) {
-                                        echo '<option value="' . $supplier['code'] . '">' . $supplier['code'] . '</option>';
+                                        echo '<option value="' . $supplier['name'] . '">' . $supplier['code'] . '</option>';
                                     }
                                 }
 
@@ -138,16 +148,26 @@
                     <div class="grid grid-cols-12 gap-4 ">
                         <div class="  col-span-2">
                             <div class="flex items-center mt-4">
-                                <input type="text" class="form-control bg-white rounded-full shadow-xl" id="search"
+                                <input type="text" class="form-control bg-white rounded-full shadow-xl" id="itemKeyword" name="itemKeyword"
                                     placeholder="Search...">
-                                <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700">
+                                <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700" name="searchItem">
                                     <i class="fa-solid fa-notes-medical"></i> </button>
                             </div>
                         </div>
 
                         <div class="  col-span-2 ">
                             <label for="itemCode" class="form-label text-xs">Item Code:</label>
-                            <input type="text" class="form-control h-8" id="itemCode" name="itemCode" >
+                            <select type="text" class="form-control h-8" id="itemCode" name="itemCode" onchange="updateItemDetails()">
+                                <?php
+                                if(!empty($itemList)){
+                                    foreach ($itemList as $item) {
+                                        echo '<option value="' . $item['description'] . '">' . $item['code'] . '</option>';
+                                    }
+                                }
+
+                                ?>
+
+                            </select>
                         </div>
 
                         <div class="  col-span-3 ">
@@ -259,6 +279,20 @@
     function exit() {
         window.location.href = "index.php";
     }
+
+
+    function updateCompanyName() {
+        var selectElement = document.getElementById("supplier");
+        var selectedName = selectElement.options[selectElement.selectedIndex].value;
+        document.getElementById("companyName").value = selectedName;
+    }
+
+    function updateItemDetails() {
+        var selectElement = document.getElementById("itemCode");
+        var selectedName = selectElement.options[selectElement.selectedIndex].value;
+        document.getElementById("description").value = selectedName;
+    }
+
     </script>
 
 </body>
