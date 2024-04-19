@@ -19,7 +19,15 @@
 <body>
     <div class="container bg-white p-4   w-full">
         <?php
-        if (isset($_POST["submit"])) {
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['save'])) {
+                saveCustomer();                
+            }
+
+        }
+
+        function saveCustomer(){
             $datepicker = $_POST["datepicker"];
             $registerNo = $_POST["registerNo"];
             $name = $_POST["name"];
@@ -27,7 +35,6 @@
             $address1 = $_POST["address1"];
             $address2 = $_POST["address2"];
             $address3 = $_POST["address3"];
-
             $loyaltyBarcode = $_POST["loyaltyBarcode"];
             $teleMobile = $_POST["teleMobile"];
             $teleLand = $_POST["teleLand"];
@@ -39,49 +46,70 @@
             $familyDetails = $_POST["familyDetails"];
             $notes = $_POST["notes"];
 
+            if(empty($datepicker) || empty($registerNo) || empty($name) || empty($location) || empty($address1) || empty($address2) || empty($address3) || empty($loyaltyBarcode) || empty($teleMobile) || empty($teleLand) || empty($nic) || empty($dob) || empty($age) || empty($occupation) || empty($area) || empty($familyDetails) || empty($notes)){
+                echo '<script>alert("Input Should not be Empty..!")</script>';
+            }else{
+                require_once '../controllers/db.php';
+                require_once '../controllers/customerController.php';
 
-            $errors = array();
+                $saved = saveCustomerData($conn, $datepicker, $registerNo, $name, $location, $address1, $address2, $address3, $loyaltyBarcode, $teleMobile, $teleLand, $nic, $dob, $age, $occupation, $area, $familyDetails, $notes);
 
-            if (empty($datepicker) || empty($registerNo) || empty($name) || empty($location) || empty($address) || empty($loyaltyBarcode) || empty($teleMobile) || empty($teleLand) || empty($nic) || empty($dob) || empty($age) || empty($occupation) || empty($area) || empty($familyDetails) || empty($notes)) {
-                array_push($errors, "All fields are required");
-            }
-
-
-            require_once "database.php";
-
-            if (count($errors) > 0) {
-                foreach ($errors as $error) {
-                    echo "<div class='alert alert-danger'>$error</div>";
+                if($saved){
+                    echo '<script>alert("Customer details Saved Successfully..!..!")</script>';
+                }else{
+                    echo '<script>alert("Something went wrong..!")</script>';
                 }
-            } else {
 
-                $sql = "INSERT INTO customers (date, registerNo, name, location, address1,address2,address3, loyaltyBarcode, teleMobile, teleLand, nic, dob, age, occupation, area, familyDetails, notes) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-
-                $stmt = mysqli_stmt_init($conn);
-                $prepareStmt = mysqli_stmt_prepare($stmt, $sql);
-                if ($stmt) {
-                    $stmt->bind_param("sssssssssssssssss", $datepicker, $registerNo, $name, $location, $address1,$address2,$address3, $loyaltyBarcode, $teleMobile, $teleLand, $nic, $dob, $age, $occupation, $area, $familyDetails, $notes);
-
-                    if ($stmt->execute()) {
-                        echo '<script>alert("Customer Register successfully.");</script>';
-                        header("Location:customer_details.php");
-                        exit();
-
-
-                    } else {
-                        echo "Error: " . $stmt->error;
-                    }
-
-                    $stmt->close();
-                } else {
-                    echo "Error: " . $conn->error;
-                }
             }
-
-
         }
+
+
+        // if (isset($_POST["submit"])) {
+        
+
+
+        //     $errors = array();
+
+        //     if (empty($datepicker) || empty($registerNo) || empty($name) || empty($location) || empty($address) || empty($loyaltyBarcode) || empty($teleMobile) || empty($teleLand) || empty($nic) || empty($dob) || empty($age) || empty($occupation) || empty($area) || empty($familyDetails) || empty($notes)) {
+        //         array_push($errors, "All fields are required");
+        //     }
+
+
+        //     require_once "database.php";
+
+        //     if (count($errors) > 0) {
+        //         foreach ($errors as $error) {
+        //             echo "<div class='alert alert-danger'>$error</div>";
+        //         }
+        //     } else {
+
+        //         $sql = "INSERT INTO customers (date, registerNo, name, location, address1,address2,address3, loyaltyBarcode, teleMobile, teleLand, nic, dob, age, occupation, area, familyDetails, notes) 
+        //     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+
+        //         $stmt = mysqli_stmt_init($conn);
+        //         $prepareStmt = mysqli_stmt_prepare($stmt, $sql);
+        //         if ($stmt) {
+        //             $stmt->bind_param("sssssssssssssssss", $datepicker, $registerNo, $name, $location, $address1,$address2,$address3, $loyaltyBarcode, $teleMobile, $teleLand, $nic, $dob, $age, $occupation, $area, $familyDetails, $notes);
+
+        //             if ($stmt->execute()) {
+        //                 echo '<script>alert("Customer Register successfully.");</script>';
+        //                 header("Location:customer_details.php");
+        //                 exit();
+
+
+        //             } else {
+        //                 echo "Error: " . $stmt->error;
+        //             }
+
+        //             $stmt->close();
+        //         } else {
+        //             echo "Error: " . $conn->error;
+        //         }
+        //     }
+
+
+        // }
         ?>
 
         <div class="row mb-2">
@@ -262,10 +290,10 @@
                 <div class="col-md-12">
                     <div class="mb-3 d-flex justify-content-end gap-3">
                         <label for="submit" class="form-label"></label>
-                        <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="submit">Submit</button>
+                        <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="save">Submit</button>
                         <button type="submit" class="bg-yellow-500 text-white p-2 font-semibold" onclick="clearForm()">Clear</button>
-                        <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="submit">Update</button>
-                        <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="submit">Delete</button>
+                        <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="update">Update</button>
+                        <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="delete">Delete</button>
                         <button type="submit" class="bg-black text-white p-2 font-semibold" onclick="exit()"
                             name="submit">Exit</button>
                     </div>
