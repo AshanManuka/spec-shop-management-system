@@ -23,6 +23,8 @@
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['save'])) {
                 saveCustomer();                
+            }else if(isset($_POST['search'])){
+                searchCustomer();
             }
 
         }
@@ -63,53 +65,76 @@
             }
         }
 
+        function searchCustomer(){
+            $keyWord = $_POST['keyword'];
 
-        // if (isset($_POST["submit"])) {
-        
+            if(empty($keyWord)){
+                echo '<script>alert("Keyword should not be Empty..!")</script>';
+            }else{
+                require_once '../controllers/db.php';
+                require_once '../controllers/customerController.php';
+
+                $result = searchCustomersByKeyword($conn, $keyWord);
+
+                if ($result === 'emptyResult') {
+                    echo '<script>alert("No results found..!")</script>';
+                } else {
+                    // Display the result in a table
+                    echo '<table class="table table-bordered custom-table" id="customerTable">';
+                    echo '<tr><th>Register No</th><th>Name</th><th>Date</th><th>Bar Code</th><th>Address One</th><th>Address Two</th><th>Address Three</th><th>Nic</th><th>Mobile</th><th>Land Phone</th><th>Occupation</th><th>Area</th><th>DoB</th><th>Age</th><th>Detail</th><th>Note</th><th>Location</th></tr>';
+                    foreach ($result as $row) {
+                        echo '<tr onclick="getRowData(this)">';
+                        echo '<td>' . $row['registerNo'] . '</td>';
+                        echo '<td>' . $row['name'] . '</td>';
+                        echo '<td>' . $row['datepicker'] . '</td>';
+                        echo '<td>' . $row['loyaltyBarcode'] . '</td>';
+                        echo '<td>' . $row['addressOne'] . '</td>';
+                        echo '<td>' . $row['addressTwo'] . '</td>';
+                        echo '<td>' . $row['addressThree'] . '</td>';
+                        echo '<td>' . $row['nic'] . '</td>';
+                        echo '<td>' . $row['teleMobile'] . '</td>';
+                        echo '<td>' . $row['teleLand'] . '</td>';
+                        echo '<td>' . $row['accupation'] . '</td>';
+                        echo '<td>' . $row['area'] . '</td>';
+                        echo '<td>' . $row['dob'] . '</td>';
+                        echo '<td>' . $row['age'] . '</td>';
+                        echo '<td>' . $row['familyDetails'] . '</td>';
+                        echo '<td>' . $row['notes'] . '</td>';
+                        echo '<td>' . $row['location'] . '</td>';
+                        echo '</tr>';
+                    }
+                    
+                    echo '</table>';
+                }
 
 
-        //     $errors = array();
+            }
+
+        }
+
 
         //     if (empty($datepicker) || empty($registerNo) || empty($name) || empty($location) || empty($address) || empty($loyaltyBarcode) || empty($teleMobile) || empty($teleLand) || empty($nic) || empty($dob) || empty($age) || empty($occupation) || empty($area) || empty($familyDetails) || empty($notes)) {
         //         array_push($errors, "All fields are required");
         //     }
-
-
-        //     require_once "database.php";
-
+       //     require_once "database.php";
         //     if (count($errors) > 0) {
         //         foreach ($errors as $error) {
         //             echo "<div class='alert alert-danger'>$error</div>";
         //         }
         //     } else {
-
         //         $sql = "INSERT INTO customers (date, registerNo, name, location, address1,address2,address3, loyaltyBarcode, teleMobile, teleLand, nic, dob, age, occupation, area, familyDetails, notes) 
         //     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-
         //         $stmt = mysqli_stmt_init($conn);
         //         $prepareStmt = mysqli_stmt_prepare($stmt, $sql);
         //         if ($stmt) {
         //             $stmt->bind_param("sssssssssssssssss", $datepicker, $registerNo, $name, $location, $address1,$address2,$address3, $loyaltyBarcode, $teleMobile, $teleLand, $nic, $dob, $age, $occupation, $area, $familyDetails, $notes);
-
         //             if ($stmt->execute()) {
         //                 echo '<script>alert("Customer Register successfully.");</script>';
         //                 header("Location:customer_details.php");
         //                 exit();
-
-
         //             } else {
         //                 echo "Error: " . $stmt->error;
         //             }
-
-        //             $stmt->close();
-        //         } else {
-        //             echo "Error: " . $conn->error;
-        //         }
-        //     }
-
-
-        // }
         ?>
 
         <div class="row mb-2">
@@ -119,13 +144,15 @@
             </div>
 
             <div class="col-md-6">
+            <form id="customerSearchForm" action="customer_register.php" method="post" class="mt-3">
                 <div class="flex items-center ">
-                    <input type="text" class="form-control bg-white rounded-full shadow-xl" id="search"
+                    <input type="text" class="form-control bg-white rounded-full shadow-xl" id="keyword" name="keyword"
                         placeholder="Search...">
-                    <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700">
+                    <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700" name="search">
                         <i class="fa-solid fa-notes-medical"></i> </button>
                 </div>
             </div>
+            </form>
         </div>
 
         <form id="customerRegistrationForm" action="customer_register.php" method="post" class="mt-3">
@@ -305,6 +332,48 @@
     </div>
 
     <script>
+
+    function getRowData(row) {
+        var regNo = row.cells[0].innerText;
+        var name = row.cells[1].innerText;
+        var date = row.cells[2].innerText;
+        var barcode = row.cells[3].innerText;
+        var add1 = row.cells[4].innerText;
+        var add2 = row.cells[5].innerText;
+        var add3 = row.cells[6].innerText;
+        var nic = row.cells[7].innerText;
+        var mobile = row.cells[8].innerText;
+        var land = row.cells[9].innerText;
+        var occupation = row.cells[10].innerText;
+        var area = row.cells[11].innerText;
+        var dob = row.cells[12].innerText;
+        var age = row.cells[13].innerText;
+        var detail = row.cells[14].innerText;
+        var note = row.cells[15].innerText;
+        var loc = row.cells[16].innerText;
+        
+        document.getElementById("registerNo").value = regNo;
+        document.getElementById("name").value = name;
+        document.getElementById("datepicker").value = date;
+        document.getElementById("loyaltyBarcode").value = barcode;
+        document.getElementById("address1").value = add1;
+        document.getElementById("address2").value = add2;
+        document.getElementById("address3").value = add3;
+        document.getElementById("nic").value = nic;
+        document.getElementById("teleMobile").value = mobile; 
+        document.getElementById("teleLand").value = land;
+        document.getElementById("occupation").value = occupation;
+        document.getElementById("area").value = area;
+        document.getElementById("dob").value = dob;
+        document.getElementById("age").value = age;
+        document.getElementById("familyDetails").value = detail; 
+        document.getElementById("notes").value = note;
+        document.getElementById("location").value = loc;
+
+
+    }
+
+
     function clearForm() {
         document.getElementById("customerRegistrationForm").reset();
     }
