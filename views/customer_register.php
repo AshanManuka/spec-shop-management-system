@@ -28,7 +28,7 @@
             }else if(isset($_POST['update'])){
                 updateCustomer();
             }else if(isset($_POST['delete'])){
-                searchCustomer();
+                deleteCustomer();
             }
 
         }
@@ -148,7 +148,25 @@
                 }
 
             }
+        }
 
+        function deleteCustomer(){
+            require_once '../controllers/db.php';
+            require_once '../controllers/customerController.php';
+
+            $id = $_POST["registerNo"];
+
+            if(empty($id)){
+                echo '<script>alert("Code should not be Empty..!")</script>';
+            }else{
+                $deleted = deleteCustomerData($conn, $id);
+
+                if($deleted){
+                    echo '<script>alert("Customer Deleted Successfully..!")</script>';
+                }else{
+                    echo '<script>alert("Something went wrong..!")</script>';
+                }
+            }
         }
 
 
