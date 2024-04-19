@@ -46,3 +46,20 @@ function searchCustomersByKeyword($conn, $keyWord){
         return $searchResults;
     }
 }
+
+function updateCustomerData($conn, $datepicker, $registerNo, $name, $location, $address1, $address2, $address3, $loyaltyBarcode, $teleMobile, $teleLand, $nic, $dob, $age, $occupation, $area, $familyDetails, $notes){
+    $sql = "UPDATE customer SET datepicker=?, name=?, location=?, addressOne=?, addressTwo=?, addressThree=?, loyaltyBarcode=?, teleMobile=?, teleLand=?, nic=?, dob=?, age=?, accupation=?, area=?, familyDetails=?, notes=? WHERE registerNo=?;";
+
+    $stmt = mysqli_stmt_init($conn);
+    
+        if(!mysqli_stmt_prepare($stmt, $sql)){
+            header("Location: ../views/index.php?error=stmtError");
+            exit();
+        }
+    
+        mysqli_stmt_bind_param($stmt, "sssssssssssssssss", $datepicker, $name, $location, $address1, $address2, $address3, $loyaltyBarcode, $teleMobile, $teleLand, $nic, $dob, $age, $occupation, $area, $familyDetails, $notes, $registerNo);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    
+        return true; 
+}

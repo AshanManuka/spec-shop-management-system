@@ -25,6 +25,10 @@
                 saveCustomer();                
             }else if(isset($_POST['search'])){
                 searchCustomer();
+            }else if(isset($_POST['update'])){
+                updateCustomer();
+            }else if(isset($_POST['delete'])){
+                searchCustomer();
             }
 
         }
@@ -106,7 +110,42 @@
                     
                     echo '</table>';
                 }
+            }
+        }
 
+
+        function updateCustomer(){
+            $datepicker = $_POST["datepicker"];
+            $registerNo = $_POST["registerNo"];
+            $name = $_POST["name"];
+            $location = $_POST["location"];
+            $address1 = $_POST["address1"];
+            $address2 = $_POST["address2"];
+            $address3 = $_POST["address3"];
+            $loyaltyBarcode = $_POST["loyaltyBarcode"];
+            $teleMobile = $_POST["teleMobile"];
+            $teleLand = $_POST["teleLand"];
+            $nic = $_POST["nic"];
+            $dob = $_POST["dob"];
+            $age = $_POST["age"];
+            $occupation = $_POST["occupation"];
+            $area = $_POST["area"];
+            $familyDetails = $_POST["familyDetails"];
+            $notes = $_POST["notes"];
+
+            if(empty($datepicker) || empty($registerNo) || empty($name) || empty($location) || empty($address1) || empty($address2) || empty($address3) || empty($loyaltyBarcode) || empty($teleMobile) || empty($teleLand) || empty($nic) || empty($dob) || empty($age) || empty($occupation) || empty($area) || empty($familyDetails) || empty($notes)){
+                echo '<script>alert("Input Should not be Empty..!")</script>';
+            }else{
+                require_once '../controllers/db.php';
+                require_once '../controllers/customerController.php';
+
+                $updated = updateCustomerData($conn, $datepicker, $registerNo, $name, $location, $address1, $address2, $address3, $loyaltyBarcode, $teleMobile, $teleLand, $nic, $dob, $age, $occupation, $area, $familyDetails, $notes);
+
+                if($updated){
+                    echo '<script>alert("Customer details Updated Successfully..!..!")</script>';
+                }else{
+                    echo '<script>alert("Something went wrong..!")</script>';
+                }
 
             }
 
