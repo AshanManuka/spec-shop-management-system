@@ -45,6 +45,8 @@
         if(empty($searchResults)){
             return 'emptyResult';
         } else {
+            //  $sResult = array($searchResults, $selectedSupCode, $selectedSupName);
+            //  return $sResult;
             return $searchResults;
         }
     }

@@ -15,16 +15,17 @@
 <body>
     <div class="container bg-white p-4 w-full ">
 
-    <?php
+ <?php
 
         require_once "../controllers/db.php";
         require_once "../controllers/supplierController.php";
-
+        
         //$supplierList = getAllSupplier($conn);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST["search"])) {
             $keyword = $_POST["keyword"];
+            $selectedItemName = $_POST["description"];
    
         if(empty($keyword)){
             echo '<script>alert("Empty Field..!")</script>';
@@ -36,6 +37,8 @@
         }
         }else if(isset($_POST["searchItem"])){
             $keyword = $_POST["itemKeyword"];
+            $selectedCmName = $_POST["companyName"];
+            
 
             if(empty($keyword)){
                 echo '<script>alert("Empty Field..!")</script>';
@@ -50,7 +53,7 @@
 
 
 
-    ?> 
+    ?>
 
         <div class="row mb-2">
 
@@ -111,12 +114,19 @@
                             <label for="companyCode" class="form-label text-xs font-medium text-center">Company Code:</label>
                                 <select type="text" class="form-control h-8" id="supplier" name="supplier" onchange="updateCompanyName()">
                                 <?php
+
+                                //insert blocked option
                                 if(!empty($supplierList)){
+
                                     foreach ($supplierList as $supplier) {
                                         echo '<option value="' . $supplier['name'] . '">' . $supplier['code'] . '</option>';
                                     }
                                 }
 
+                                if($selectedCmCode){
+                                    echo '<option value="' . $selectedCmCode . '">' . $selectedCmCode . '</option>';
+                                }
+                                
                                 ?>
 
                             </select>
@@ -128,6 +138,11 @@
                             <label for="companyName" class="form-label text-xs font-medium text-center">Company
                                 Name:</label>
                             <input type="text" class="form-control h-8 " id="companyName" name="companyName">
+                            <?php
+                                echo '<script>';
+                                echo 'document.getElementById("companyName").value="'.$selectedCmName.'"';
+                                echo '</script>';
+                            ?>
                         </div>
 
 
@@ -150,7 +165,7 @@
                             <div class="flex items-center mt-4">
                                 <input type="text" class="form-control bg-white rounded-full shadow-xl" id="itemKeyword" name="itemKeyword"
                                     placeholder="Search...">
-                                <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700" name="searchItem">
+                                <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700" name="searchItem" id="searchItem" onclick="searchItem()"  >
                                     <i class="fa-solid fa-notes-medical"></i> </button>
                             </div>
                         </div>
@@ -159,10 +174,16 @@
                             <label for="itemCode" class="form-label text-xs">Item Code:</label>
                             <select type="text" class="form-control h-8" id="itemCode" name="itemCode" onchange="updateItemDetails()">
                                 <?php
+
+                                // insert blocked option
                                 if(!empty($itemList)){
                                     foreach ($itemList as $item) {
                                         echo '<option value="' . $item['description'] . '">' . $item['code'] . '</option>';
                                     }
+                                }
+
+                                if($selectedItemCode){
+                                    echo '<option value="' . $selectedItemCode . '">' . $selectedItemCode . '</option>';
                                 }
 
                                 ?>
@@ -173,6 +194,11 @@
                         <div class="  col-span-3 ">
                             <label for="description" class="form-label text-xs">Description:</label>
                             <input type="text" class="form-control h-8" id="description" name="description" >
+                            <?php
+                                echo '<script>';
+                                echo 'document.getElementById("description").value="'.$selectedItemName.'"';
+                                echo '</script>';
+                            ?>
                         </div>
 
 
@@ -280,18 +306,21 @@
         window.location.href = "index.php";
     }
 
-
     function updateCompanyName() {
         var selectElement = document.getElementById("supplier");
-        var selectedName = selectElement.options[selectElement.selectedIndex].value;
-        document.getElementById("companyName").value = selectedName;
+        var companyNameInput = document.getElementById("companyName");
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        companyNameInput.value = selectedOption.value;
     }
 
     function updateItemDetails() {
         var selectElement = document.getElementById("itemCode");
-        var selectedName = selectElement.options[selectElement.selectedIndex].value;
-        document.getElementById("description").value = selectedName;
+        var companyNameInput = document.getElementById("description");
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        companyNameInput.value = selectedOption.value;
+        
     }
+
 
     </script>
 
