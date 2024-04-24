@@ -19,14 +19,17 @@
 
         require_once "../controllers/db.php";
         require_once "../controllers/supplierController.php";
-        
+        $data= null;
+               
         //$supplierList = getAllSupplier($conn);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST["search"])) {
             $keyword = $_POST["keyword"];
-            $selectedItemName = $_POST["description"];
-   
+            $selectedDate = $_POST["date"];
+            //$data = json_decode($_POST["dataArrayInput"], true);
+        
+
         if(empty($keyword)){
             echo '<script>alert("Empty Field..!")</script>';
         } else {
@@ -38,6 +41,16 @@
         }else if(isset($_POST["searchItem"])){
             $keyword = $_POST["itemKeyword"];
             $selectedCmName = $_POST["companyName"];
+            $selectedCmCode = $_POST["hdnSupCode"];
+            $selectedDate = $_POST["date"];
+            $enteredInvoiceNo = $_POST["invoiceNo"];
+                 
+            if (isset($_POST["dataArrayInput"]) && !empty($_POST["dataArrayInput"])) {
+                $data = json_decode($_POST["dataArrayInput"], true);
+                $jsonData = json_encode($data);
+            } else {
+                echo "empty";
+            }      
             
 
             if(empty($keyword)){
@@ -48,7 +61,56 @@
                 $itemList = searchItemByKeyword($conn, $keyword);
     
             }
+        }else if(isset($_POST["saveGrn"])){
+            $keyword = $_POST["itemKeyword"];
+            $selectedCmName = $_POST["companyName"];
+            $selectedCmCode = $_POST["hdnSupCode"];
+            $selectedDate = $_POST["date"];
+            $enteredInvoiceNo = $_POST["invoiceNo"];
+
+            $data = json_decode($_POST["dataArrayInput"], true); 
+    
+            $code = $_POST["hdnItemCode"];
+            $qty = $_POST["Qty"];
+            $desc = $_POST["description"];
+            $price = $_POST["price"];
+            $discount = $_POST["discountRs"];
+            $amount = $_POST["amount"];
+
+            $rowData = array(
+            "code" => $code,
+            "qty" => $qty,
+            "disc" => $discount,
+            "price" => $price,
+            "amount" => $amount,
+            "desc" => $desc
+        );
+
+        $data[] = $rowData;
+        $jsonData = json_encode($data);
+
+        }else if(isset($_POST["saveAll"])){
+            $selectedCmName = $_POST["companyName"];
+            $selectedDate = $_POST["date"];
+            $enteredInvoiceNo = $_POST["invoiceNo"];
+
+            $data = json_decode($_POST["dataArrayInput"], true); 
+
+            require_once "../controllers/itemController.php";
+
+            $saved = saveGoodReciedData($conn, $selectedCmName, $selectedDate, $enteredInvoiceNo, $data);
+
+            if($saved){
+                echo '<script>alert("Updated Successfully..!..!")</script>';
+            }else{
+                echo '<script>alert("Something went wrong..!")</script>';
+            }
+
+
         }
+
+
+
     }
 
 
@@ -92,6 +154,13 @@
                         <div class=" flex col-span-6 gap-2">
                             <label for="date" class="form-label text-xs font-medium text-center mt-2">Date:</label>
                             <input type="date" class="form-control h-10 " id="date" name="date">
+                            <?php
+                            
+                                    echo '<script>';
+                                    echo 'document.getElementById("date").value="'.$selectedDate.'"';
+                                    echo '</script>'; 
+                                                           
+                            ?>
                         </div>
                     </div>
                 </div>
@@ -119,7 +188,8 @@
                                 if(!empty($supplierList)){
 
                                     foreach ($supplierList as $supplier) {
-                                        echo '<option value="' . $supplier['name'] . '">' . $supplier['code'] . '</option>';
+                                        // echo '<option value="' . $supplier['name'] . '">' . $supplier['code'] . '</option>';
+                                        echo '<option value="' . $supplier['name'] . '" data-id="' . $supplier['code'] . '">' . $supplier['code'] . '</option>';
                                     }
                                 }
 
@@ -130,6 +200,8 @@
                                 ?>
 
                             </select>
+
+                            <input type="hidden" id="hdnSupCode" name="hdnSupCode" value="">
                  
                         </div>
 
@@ -151,6 +223,13 @@
                             <label for="invoiceNo" class="form-label text-xs font-medium text-center ">Invoice
                                 No:</label>
                             <input type="text" class="form-control h-8 " id="invoiceNo" name="invoiceNo">
+                            <?php
+                            
+                            echo '<script>';
+                            echo 'document.getElementById("invoiceNo").value="'.$enteredInvoiceNo.'"';
+                            echo '</script>'; 
+                                                   
+                    ?>
                         </div>
                     </div>
                 </div>
@@ -178,7 +257,7 @@
                                 // insert blocked option
                                 if(!empty($itemList)){
                                     foreach ($itemList as $item) {
-                                        echo '<option value="' . $item['description'] . '">' . $item['code'] . '</option>';
+                                        echo '<option value="' . $item['description'] . '" data-id="' . $item['code'] . '">' . $item['code'] . '</option>';
                                     }
                                 }
 
@@ -189,6 +268,9 @@
                                 ?>
 
                             </select>
+
+                            <input type="hidden" id="hdnItemCode" name="hdnItemCode" value="">
+                            
                         </div>
 
                         <div class="  col-span-3 ">
@@ -222,11 +304,13 @@
                             <label for="amount" class="form-label text-xs">Amount:</label>
                             <input type="text" class="form-control w-full h-8" id="amount" name="amount">
                         </div>
+
+                        <button class="ml-4 text-yellow-500 text-xl hover:text-blue-700" name="saveGrn" id="saveGrn"><i class="fa-solid fa-notes-medical"></i> </button>
                     </div>
 
                     <!-- Second row with table -->
                     <div class="col-span-12 mt-2">
-                        <table class="table table-bordered custom-table">
+                        <table class="table table-bordered custom-table" id="tbl">
                             <thead class="text-xs">
                                 <tr>
                                     <th>#</th>
@@ -242,21 +326,41 @@
                                 </tr>
                             </thead>
                             <tbody class="text-xs">
-                                <tr>
-                                    <td>001</td>
-                                    <td>Electronics</td>
-                                </tr>
-                                <tr>
-                                    <td>002</td>
-                                    <td>Clothing</td>
-                                </tr>
-                                <tr>
-                                    <td>003</td>
-                                    <td>Furniture</td>
-                                </tr>
+                                
+                                <?php
+                
+                                if($data !== null){
+                                    foreach($data as $index => $row) {
+                                        // Output a table row for each row of data
+                                        echo "<tr>";
+                                        echo "<td>" . ($index + 1) . "</td>"; // Increment index by 1 to start from 1
+                                        echo "<td>" . $row['code'] . "</td>";
+                                        echo "<td>" . $row['desc'] . "</td>";
+                                        echo "<td>Size</td>"; // Add the size column, adjust as needed
+                                        echo "<td>" . $row['qty'] . "</td>";
+                                        echo "<td>" . $row['disc'] . "</td>";
+                                        echo "<td>" . $row['price'] . "</td>";
+                                        echo "<td>" . $row['amount'] . "</td>";
+                                        echo "</tr>";
+                                    }
+                                }
+                
+                                ?>
+                               
+                               
                             </tbody>
                         </table>
+                        
                     </div>
+                    <input type="hidden" id="dataArrayInput" name="dataArrayInput" value="">
+                    <?php 
+                       echo '<script>';
+                       echo 'var datas = '.$jsonData.';';
+                       echo 'document.getElementById("dataArrayInput").value = JSON.stringify(datas);';
+                       echo '</script>';
+                       
+                    ?> 
+                 
                 </div>
 
 
@@ -281,10 +385,10 @@
                 <div class="col-span-6  text-end pt-3">
                     <div class="mb-3  gap-3">
                         <label for="submit" class="form-label"></label>
-                        <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="submit">Bill Close</button>
+                        <button type="submit" class="bg-blue-600 text-white p-2 font-semibold" name="saveAll">Bill Close</button>
                         <button type="submit" class="bg-yellow-500 text-white p-2 font-semibold" onclick="clearForm()">Clear</button>
-                        <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="submit">Update</button>
-                        <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="submit">Delete</button>
+                        <button type="submit" class="bg-green-600 text-white p-2 font-semibold" name="update">Update</button>
+                        <button type="submit" class="bg-red-500 text-white p-2 font-semibold" name="delete">Delete</button>
                         <button type="submit" class="bg-black text-white p-2 font-semibold" onclick="exit()"
                             name="submit">Exit</button>
                     </div>
@@ -309,17 +413,81 @@
     function updateCompanyName() {
         var selectElement = document.getElementById("supplier");
         var companyNameInput = document.getElementById("companyName");
+        var hiddenSupCode = document.getElementById("hdnSupCode");
         var selectedOption = selectElement.options[selectElement.selectedIndex];
         companyNameInput.value = selectedOption.value;
+        hiddenSupCode.value = selectedOption.getAttribute("data-id");
     }
 
     function updateItemDetails() {
         var selectElement = document.getElementById("itemCode");
         var companyNameInput = document.getElementById("description");
+        var hiddenItemCode = document.getElementById("hdnItemCode");
         var selectedOption = selectElement.options[selectElement.selectedIndex];
-        companyNameInput.value = selectedOption.value;
-        
+        companyNameInput.value = selectedOption.value;            
+        hiddenItemCode.value = selectedOption.getAttribute("data-id");           
     }
+
+
+    var dataArray = [];
+    function saveGrnRow() {
+        var code = document.getElementById("hdnItemCode").value;
+        var qty = document.getElementById("Qty").value;
+        var disc = document.getElementById("discountRs").value;
+        var price = document.getElementById("price").value;
+        var amount = document.getElementById("amount").value;
+        var desc = document.getElementById("description").value;
+
+        var rowData = {
+            code: code,
+            qty: qty,
+            disc: disc,
+            price: price,
+            amount: amount,
+            desc: desc
+        };
+
+        dataArray.push(rowData);
+        
+        document.getElementById("dataArrayInput").value = JSON.stringify(dataArray);
+        updateTable();
+
+    }
+
+    
+    function updateTable() {
+        var tableBody = document.getElementById("tbl");
+
+        // Clear the table body first
+        tableBody.innerHTML = "";
+
+        // Loop through the data array and create table rows
+        dataArray.forEach(function(data, index) {
+            var newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${data.code}</td>
+                <td>${data.desc}</td>
+                <td>Size</td>
+                <td>${data.qty}</td>
+                <td>${data.disc}</td>
+                <td>${data.price}</td>
+                <td>${data.amount}</td>
+            `;
+            tableBody.appendChild(newRow);
+        });
+    }
+
+    // Function to clear input fields after adding the data
+    // function clearInputFields() {
+    //     document.getElementById("itemCode").value = "";
+    //     document.getElementById("Qty").value = "";
+    //     document.getElementById("discountRs").value = "";
+    //     document.getElementById("price").value = "";
+    //     document.getElementById("amount").value = "";
+    //     document.getElementById("description").value = "";
+    // }
+
 
 
     </script>
